@@ -5,7 +5,7 @@ import Message from './Message';
 import db from './firebase';
 import firebase from 'firebase/compat/app'
 import 'firebase/firestore';
-import {collection, orderBy, getDocs} from 'firebase/firestore';
+import {collection, orderBy, getDocs, onSnapshot, query} from 'firebase/firestore';
 
 function App() {
     const [input, setInput] = useState('')
@@ -17,9 +17,12 @@ function App() {
     }, [])
     
     useEffect(() => {
-	const querySnapshop = getDocs(collection(db, "messages"), orderBy("timestamp", "desc"));
-	querySnapshop.forEach((snapshop) => {setMessages(snapshop.data)})
-	   }, [])
+	const q = query(collection(db, "messages"))
+	const unsub = onSnapshot(q, (querySnapshot) => {
+	    setMessages(querySnapshot.docs.map(d => d.data()));
+
+	})
+    }, [])
 
     
     const sendMessages = (e) => {
