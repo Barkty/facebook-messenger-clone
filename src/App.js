@@ -3,7 +3,9 @@ import {useState, useEffect } from 'react';
 import { Button, FormControl, InputLabel, Input } from '@material-ui/core';
 import Message from './Message';
 import db from './firebase';
-import firebase from 'firebase';
+import firebase from 'firebase/compat/app'
+import 'firebase/firestore';
+import {collection, orderBy, getDocs} from 'firebase/firestore';
 
 function App() {
     const [input, setInput] = useState('')
@@ -15,12 +17,11 @@ function App() {
     }, [])
     
     useEffect(() => {
-	db.collection("messages")
-	    .orderby("timestamp", "ascending")
-	    .onSnapshot(snapshot => {
-		setMessages(snapshot.docs.map(doc => (doc.data())))})
-    }, [])
+	const querySnapshop = getDocs(collection(db, "messages"), orderBy("timestamp", "desc"));
+	querySnapshop.forEach((snapshop) => {setMessages(snapshop.data)})
+	   }, [])
 
+    
     const sendMessages = (e) => {
 	e.preventDefault();
 	db.collection("messages").add({
