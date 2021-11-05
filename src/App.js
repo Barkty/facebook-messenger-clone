@@ -19,7 +19,7 @@ function App() {
     useEffect(() => {
 	const q = query(collection(db, "messages"))
 	const unsub = onSnapshot(q, (querySnapshot) => {
-	    setMessages(querySnapshot.docs.map(d => d.data()));
+	    console.log(querySnapshot.docs.map(d => d.data()));
 
 	})
     }, [])
